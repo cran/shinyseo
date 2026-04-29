@@ -1,0 +1,17 @@
+7be4d608784f41d844c40ae69b637a2d *DESCRIPTION
+81d643874d1c14081e2ed3e5f9ed9c12 *NAMESPACE
+b2d8469a2a5d28bb99669957310b815a *R/defaults.R
+920926162c4ba1dc45d7a4931c2702ae *R/read_meta.R
+da655e314bc48d3e5098f67983b8b193 *R/social_meta.R
+004ff593873ef569e7fbdad4d62896a4 *R/utils.R
+bccba4a73b2f00a2104a300907112e4d *README.md
+fcd6987fd8fa4074a608efa154b339b2 *build/vignette.rds
+dd2e77c638a5b5836ffd11409cde7fd3 *inst/doc/API.Rmd
+1f40c1341f7158f0fcb431bee1588518 *inst/doc/API.html
+df6ed5b5617ffc38fdd5fe45183ea4e7 *inst/doc/REFERENCE.Rmd
+b3e01c009334f8a4a909f152bb0823b6 *inst/doc/REFERENCE.html
+90cc04b56b5bc62735ddd49968bd22aa *man/social_meta.Rd
+64d10d67e7c7a4876163e534d4d0557d *tests/testthat.R
+95eb2966f26e1b9a612f8e2bd5e87df8 *tests/testthat/test-social_meta.R
+dd2e77c638a5b5836ffd11409cde7fd3 *vignettes/API.Rmd
+df6ed5b5617ffc38fdd5fe45183ea4e7 *vignettes/REFERENCE.Rmd
