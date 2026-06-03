@@ -402,6 +402,12 @@ validate that the values are non-empty strings.</p>
 <li><code>locale = &quot;en_US&quot;</code></li>
 <li><code>robots = &quot;index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1&quot;</code></li>
 <li><code>twitter_card = &quot;summary_large_image&quot;</code></li>
+<li><code>bing_site_verification = Sys.getenv(&quot;SHINYSEO_BING_SITE_VERIFICATION&quot;)</code>
+when present</li>
+<li><code>twitter_site = Sys.getenv(&quot;SHINYSEO_TWITTER_SITE&quot;)</code> when
+present</li>
+<li><code>twitter_creator = Sys.getenv(&quot;SHINYSEO_TWITTER_CREATOR&quot;)</code>
+when present</li>
 <li><code>schema_type = &quot;WebApplication&quot;</code></li>
 <li><code>operating_system = &quot;Any&quot;</code></li>
 <li><code>author_type = &quot;Person&quot;</code></li>
@@ -415,6 +421,9 @@ validate that the values are non-empty strings.</p>
 <li><code>schema = TRUE</code>, <code>schema = NULL</code>, or an
 omitted <code>schema</code> field all result in JSON-LD output</li>
 <li><code>schema = FALSE</code> suppresses JSON-LD</li>
+<li>The helper does not emit a <code>&lt;title&gt;</code> tag; set the
+document title in the app UI so it does not clash with any title Shiny
+already sets</li>
 </ul>
 </div>
 <div id="output-tags" class="section level2">
@@ -468,6 +477,31 @@ is present</li>
 <li><code>google-site-verification</code> when
 <code>google_site_verification</code> is present</li>
 </ul></li>
+<li>Yandex verification:
+<ul>
+<li><code>yandex-verification</code> when
+<code>yandex_site_verification</code> is present</li>
+</ul></li>
+<li>Baidu verification:
+<ul>
+<li><code>baidu-site-verification</code> when
+<code>baidu_site_verification</code> is present</li>
+</ul></li>
+<li>Naver verification:
+<ul>
+<li><code>naver-site-verification</code> when
+<code>naver_site_verification</code> is present</li>
+</ul></li>
+<li>Facebook domain verification:
+<ul>
+<li><code>facebook-domain-verification</code> when
+<code>facebook_domain_verification</code> is present</li>
+</ul></li>
+<li>Pinterest domain verification:
+<ul>
+<li><code>p:domain_verify</code> when
+<code>pinterest_domain_verification</code> is present</li>
+</ul></li>
 <li>Schema.org JSON-LD:
 <ul>
 <li>only when <code>schema</code> is not <code>FALSE</code></li>
@@ -497,7 +531,7 @@ is present</li>
 <tbody>
 <tr class="odd">
 <td><code>title</code></td>
-<td>Page title, Open Graph title, Twitter title, schema name</td>
+<td>Open Graph title, Twitter title, schema name</td>
 </tr>
 <tr class="even">
 <td><code>description</code></td>
@@ -526,11 +560,13 @@ schema description</td>
 </tr>
 <tr class="even">
 <td><code>twitter_site</code></td>
-<td>Twitter site handle</td>
+<td>Twitter site handle; falls back to
+<code>SHINYSEO_TWITTER_SITE</code></td>
 </tr>
 <tr class="odd">
 <td><code>twitter_creator</code></td>
-<td>Twitter creator handle</td>
+<td>Twitter creator handle; falls back to
+<code>SHINYSEO_TWITTER_CREATOR</code></td>
 </tr>
 <tr class="even">
 <td><code>twitter_image_alt</code></td>
@@ -554,57 +590,78 @@ schema description</td>
 </tr>
 <tr class="odd">
 <td><code>bing_site_verification</code></td>
-<td>Bing Webmaster verification</td>
+<td>Bing Webmaster verification; falls back to
+<code>SHINYSEO_BING_SITE_VERIFICATION</code></td>
 </tr>
 <tr class="even">
 <td><code>google_site_verification</code></td>
 <td>Google Search Console verification</td>
 </tr>
 <tr class="odd">
+<td><code>yandex_site_verification</code></td>
+<td>Yandex Webmaster verification</td>
+</tr>
+<tr class="even">
+<td><code>baidu_site_verification</code></td>
+<td>Baidu Webmaster verification</td>
+</tr>
+<tr class="odd">
+<td><code>naver_site_verification</code></td>
+<td>Naver Webmaster verification</td>
+</tr>
+<tr class="even">
+<td><code>facebook_domain_verification</code></td>
+<td>Facebook domain verification</td>
+</tr>
+<tr class="odd">
+<td><code>pinterest_domain_verification</code></td>
+<td>Pinterest domain verification</td>
+</tr>
+<tr class="even">
 <td><code>schema_type</code></td>
 <td>Schema.org <code>@type</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>application_category</code></td>
 <td>Schema.org <code>applicationCategory</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>operating_system</code></td>
 <td>Schema.org <code>operatingSystem</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>educational_use</code></td>
 <td>Schema.org <code>educationalUse</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>is_accessible_for_free</code></td>
 <td>Schema.org <code>isAccessibleForFree</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>disclaimer</code></td>
 <td>Schema.org <code>disclaimer</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>author_name</code></td>
 <td>Schema.org <code>author.name</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>author_type</code></td>
 <td>Schema.org <code>author.@type</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>publisher_name</code></td>
 <td>Schema.org <code>publisher.name</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>publisher_type</code></td>
 <td>Schema.org <code>publisher.@type</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>in_language</code></td>
 <td>Schema.org <code>inLanguage</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>schema</code></td>
 <td>Turns JSON-LD on or off</td>
 </tr>

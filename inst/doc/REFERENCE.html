@@ -341,50 +341,56 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<div id="referanse-for-shinyseo" class="section level1">
-<h1>Referanse for <code>shinyseo</code></h1>
-<p>Denne pakken lager metadata for en Shiny-app og returnerer dem som
-HTML-tagger til <code>&lt;head&gt;</code>.</p>
-<p>Det er nyttig når du vil at siden skal se riktig ut i delinger på
-Facebook, LinkedIn, X, Slack og andre tjenester som leser Open Graph
-eller Twitter Card-metadata.</p>
-<div id="hovedflyt" class="section level2">
-<h2>Hovedflyt</h2>
+<div id="reference-for-shinyseo" class="section level1">
+<h1>Reference for <code>shinyseo</code></h1>
+<p>This package generates metadata for a Shiny app and returns HTML tags
+for <code>&lt;head&gt;</code>.</p>
+<p>It is useful when you want the page to look right in shares on
+Facebook, LinkedIn, X, Slack, and other services that read Open Graph or
+Twitter Card metadata.</p>
+<div id="main-flow" class="section level2">
+<h2>Main flow</h2>
 <ol style="list-style-type: decimal">
-<li>Du sender inn en YAML-fil eller en navngitt liste.</li>
-<li><code>social_meta()</code> leser inn dataene.</li>
-<li>Standardverdier fylles inn der det passer.</li>
-<li>De fire grunnfeltene blir kontrollert.</li>
-<li>Funksjonen bygger en <code>tags$head()</code>-blokk med
+<li>Pass a YAML file or a named list.</li>
+<li><code>social_meta()</code> reads the data.</li>
+<li>Default values are filled in where needed.</li>
+<li>The four required fields are checked.</li>
+<li>The function builds a <code>tags$head()</code> block with
 metadata.</li>
 </ol>
 </div>
-<div id="inndata" class="section level2">
-<h2>Inndata</h2>
-<p><code>social_meta(meta)</code> tar imot:</p>
+<div id="inputs" class="section level2">
+<h2>Inputs</h2>
+<p><code>social_meta(meta)</code> accepts:</p>
 <ul>
-<li>en streng med filsti til YAML</li>
-<li>eller en navngitt liste</li>
+<li>a string containing a path to YAML</li>
+<li>or a named list</li>
 </ul>
-<div id="obligatoriske-felter" class="section level3">
-<h3>Obligatoriske felter</h3>
-<p>Disse må finnes uansett:</p>
+<div id="required-fields" class="section level3">
+<h3>Required fields</h3>
+<p>These must always exist:</p>
 <ul>
 <li><code>title</code></li>
 <li><code>description</code></li>
 <li><code>url</code></li>
 <li><code>image</code></li>
 </ul>
-<p>Hvis ett av dem mangler, stopper funksjonen med en feilmelding.</p>
+<p>If one is missing, the function stops with an error.</p>
 </div>
 </div>
-<div id="standardverdier" class="section level2">
-<h2>Standardverdier</h2>
-<p>Hvis du ikke setter dem selv, brukes disse standardene:</p>
+<div id="defaults" class="section level2">
+<h2>Defaults</h2>
+<p>If you do not set them yourself, these defaults are used:</p>
 <ul>
 <li><code>locale = &quot;en_US&quot;</code></li>
 <li><code>robots = &quot;index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1&quot;</code></li>
 <li><code>twitter_card = &quot;summary_large_image&quot;</code></li>
+<li><code>bing_site_verification = Sys.getenv(&quot;SHINYSEO_BING_SITE_VERIFICATION&quot;)</code>
+when present</li>
+<li><code>twitter_site = Sys.getenv(&quot;SHINYSEO_TWITTER_SITE&quot;)</code> when
+present</li>
+<li><code>twitter_creator = Sys.getenv(&quot;SHINYSEO_TWITTER_CREATOR&quot;)</code>
+when present</li>
 <li><code>schema_type = &quot;WebApplication&quot;</code></li>
 <li><code>operating_system = &quot;Any&quot;</code></li>
 <li><code>author_type = &quot;Person&quot;</code></li>
@@ -392,27 +398,38 @@ metadata.</li>
 <li><code>in_language = locale</code></li>
 </ul>
 </div>
-<div id="hvilke-tagger-som-blir-laget" class="section level2">
-<h2>Hvilke tagger som blir laget</h2>
-<p>Funksjonen bygger blant annet:</p>
+<div id="what-tags-are-created" class="section level2">
+<h2>What tags are created</h2>
+<p>The function builds:</p>
 <ul>
 <li><code>&lt;link rel=&quot;canonical&quot;&gt;</code></li>
 <li><code>meta name=&quot;description&quot;</code></li>
 <li><code>meta name=&quot;robots&quot;</code></li>
 <li><code>meta property=&quot;og:*&quot;</code></li>
 <li><code>meta name=&quot;twitter:*&quot;</code></li>
-<li><code>meta name=&quot;msvalidate.01&quot;</code> hvis Bing-verifisering er
-satt</li>
-<li><code>meta name=&quot;google-site-verification&quot;</code> hvis
-Google-verifisering er satt</li>
+<li><code>meta name=&quot;msvalidate.01&quot;</code> when Bing verification is set
+or when <code>SHINYSEO_BING_SITE_VERIFICATION</code> is present</li>
+<li><code>meta name=&quot;google-site-verification&quot;</code> when Google
+verification is set</li>
+<li><code>meta name=&quot;yandex-verification&quot;</code> when Yandex
+verification is set</li>
+<li><code>meta name=&quot;baidu-site-verification&quot;</code> when Baidu
+verification is set</li>
+<li><code>meta name=&quot;naver-site-verification&quot;</code> when Naver
+verification is set</li>
+<li><code>meta name=&quot;facebook-domain-verification&quot;</code> when Facebook
+domain verification is set</li>
+<li><code>meta name=&quot;p:domain_verify&quot;</code> when Pinterest domain
+verification is set</li>
 <li><code>&lt;script type=&quot;application/ld+json&quot;&gt;</code> for
 schema.org</li>
-<li><code>&lt;title&gt;</code></li>
+<li>no <code>&lt;title&gt;</code> tag; set the title in the app UI
+instead</li>
 </ul>
 </div>
 <div id="open-graph" class="section level2">
 <h2>Open Graph</h2>
-<p>Disse feltene brukes direkte i Open Graph:</p>
+<p>These fields are used directly in Open Graph:</p>
 <ul>
 <li><code>title</code></li>
 <li><code>description</code></li>
@@ -428,17 +445,28 @@ schema.org</li>
 </div>
 <div id="twitter-card" class="section level2">
 <h2>Twitter Card</h2>
-<p>Disse feltene brukes direkte i Twitter Card:</p>
+<p>These fields are used directly in Twitter Card:</p>
 <ul>
 <li><code>twitter_card</code></li>
-<li><code>twitter_site</code></li>
-<li><code>twitter_creator</code></li>
+<li><code>twitter_site</code> with fallback to
+<code>SHINYSEO_TWITTER_SITE</code></li>
+<li><code>twitter_creator</code> with fallback to
+<code>SHINYSEO_TWITTER_CREATOR</code></li>
 <li><code>twitter_image_alt</code></li>
 </ul>
 </div>
+<div id="bing-verification" class="section level2">
+<h2>Bing verification</h2>
+<p>Bing verification is used directly when the following is set:</p>
+<ul>
+<li><code>bing_site_verification</code></li>
+</ul>
+<p>If that field is missing,
+<code>SHINYSEO_BING_SITE_VERIFICATION</code> is used when present.</p>
+</div>
 <div id="schema.org-json-ld" class="section level2">
 <h2>Schema.org JSON-LD</h2>
-<p>JSON-LD blir laget med disse grunnfeltene:</p>
+<p>JSON-LD is created with these base fields:</p>
 <ul>
 <li><code>@context = &quot;https://schema.org&quot;</code></li>
 <li><code>@type = schema_type</code></li>
@@ -447,7 +475,7 @@ schema.org</li>
 <li><code>url = url</code></li>
 <li><code>inLanguage = in_language</code></li>
 </ul>
-<p>I tillegg kan disse feltene være med:</p>
+<p>Additional fields may be included:</p>
 <ul>
 <li><code>application_category</code></li>
 <li><code>operating_system</code></li>
@@ -457,34 +485,34 @@ schema.org</li>
 <li><code>author_name</code></li>
 <li><code>publisher_name</code></li>
 </ul>
-<p>Hvis du setter <code>schema = FALSE</code>, blir JSON-LD utelatt
-helt.</p>
+<p>If you set <code>schema = FALSE</code>, JSON-LD is omitted
+entirely.</p>
 </div>
-<div id="praktisk-eksempel" class="section level2">
-<h2>Praktisk eksempel</h2>
+<div id="practical-example" class="section level2">
+<h2>Practical example</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>ui <span class="ot">&lt;-</span> shiny<span class="sc">::</span><span class="fu">fluidPage</span>(</span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  shinyseo<span class="sc">::</span><span class="fu">social_meta</span>(<span class="fu">list</span>(</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Kalkulator&quot;</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;En enkel app for å beregne noe.&quot;</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">&quot;Calculator&quot;</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;A simple app for calculating things.&quot;</span>,</span>
 <span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>    <span class="at">url =</span> <span class="st">&quot;https://example.no&quot;</span>,</span>
 <span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>    <span class="at">image =</span> <span class="st">&quot;https://example.no/preview.png&quot;</span>,</span>
 <span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>    <span class="at">twitter_site =</span> <span class="st">&quot;@example&quot;</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    <span class="at">twitter_creator =</span> <span class="st">&quot;@example&quot;</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>    <span class="at">schema =</span> <span class="cn">TRUE</span></span>
 <span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>  )),</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  shiny<span class="sc">::</span><span class="fu">h1</span>(<span class="st">&quot;Kalkulator&quot;</span>)</span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  shiny<span class="sc">::</span><span class="fu">h1</span>(<span class="st">&quot;Calculator&quot;</span>)</span>
 <span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>)</span></code></pre></div>
 </div>
-<div id="når-du-bør-bruke-den" class="section level2">
-<h2>Når du bør bruke den</h2>
-<p>Bruk pakken når du vil ha en liten og ryddig løsning for metadata i
-en Shiny-app uten å bygge en egen metadata-motor.</p>
-<p>Den passer spesielt godt når du:</p>
+<div id="when-to-use-it" class="section level2">
+<h2>When to use it</h2>
+<p>Use the package when you want a small, tidy metadata solution in a
+Shiny app without building a custom metadata engine.</p>
+<p>It is especially useful when you:</p>
 <ul>
-<li>har én app eller et lite antall apper</li>
-<li>vil styre metadata fra en YAML-fil</li>
-<li>vil ha samme metadata i flere miljøer</li>
-<li>vil ha sosial deling og søk som oppfører seg forutsigbart</li>
+<li>have one app or a small number of apps</li>
+<li>want to manage metadata from a YAML file</li>
+<li>want the same metadata across multiple environments</li>
+<li>want social sharing and search results to behave predictably</li>
 </ul>
 </div>
 </div>

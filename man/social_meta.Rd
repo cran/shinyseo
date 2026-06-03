@@ -21,6 +21,16 @@ Inject social metadata into Shiny UI
 \details{
 If \code{meta} is a character string, it is treated as a YAML file
   path and read with \code{yaml::read_yaml()}. Set \code{schema = FALSE} to
-  suppress JSON-LD output. Optional verification fields include
-  \code{bing_site_verification} and \code{google_site_verification}.
+  suppress JSON-LD output. \code{bing_site_verification} falls back to
+  \code{SHINYSEO_BING_SITE_VERIFICATION} when that environment variable is
+  set. \code{twitter_site} and
+  \code{twitter_creator} fall back to \code{SHINYSEO_TWITTER_SITE} and
+  \code{SHINYSEO_TWITTER_CREATOR} when those environment variables are set.
+  The helper does not emit a \code{<title>} tag; set the document title in
+  the app UI so it does not clash with any title Shiny already sets.
+  Optional verification fields include
+  \code{bing_site_verification}, \code{google_site_verification},
+  \code{yandex_site_verification}, \code{baidu_site_verification},
+  \code{naver_site_verification}, \code{facebook_domain_verification},
+  and \code{pinterest_domain_verification}.
 }

@@ -7,8 +7,18 @@
 #'   Graph, Twitter Card, and optional schema.org metadata.
 #' @details If \code{meta} is a character string, it is treated as a YAML file
 #'   path and read with \code{yaml::read_yaml()}. Set \code{schema = FALSE} to
-#'   suppress JSON-LD output. Optional verification fields include
-#'   \code{bing_site_verification} and \code{google_site_verification}.
+#'   suppress JSON-LD output. \code{bing_site_verification} falls back to
+#'   \code{SHINYSEO_BING_SITE_VERIFICATION} when that environment variable is
+#'   set. \code{twitter_site} and \code{twitter_creator} fall back to
+#'   \code{SHINYSEO_TWITTER_SITE} and
+#'   \code{SHINYSEO_TWITTER_CREATOR} when those environment variables are set.
+#'   The helper does not emit a \code{<title>} tag; set the document title in
+#'   the app UI so it does not clash with an existing Shiny title.
+#'   Optional verification fields include
+#'   \code{bing_site_verification}, \code{google_site_verification},
+#'   \code{yandex_site_verification}, \code{baidu_site_verification},
+#'   \code{naver_site_verification}, \code{facebook_domain_verification},
+#'   and \code{pinterest_domain_verification}.
 #' @export
 social_meta <- function(meta) {
   if (is.character(meta)) {
@@ -75,13 +85,26 @@ social_meta <- function(meta) {
     if (!is.null(meta$google_site_verification))
       shiny::tags$meta(name="google-site-verification", content=meta$google_site_verification),
 
+    if (!is.null(meta$yandex_site_verification))
+      shiny::tags$meta(name="yandex-verification", content=meta$yandex_site_verification),
+
+    if (!is.null(meta$baidu_site_verification))
+      shiny::tags$meta(name="baidu-site-verification", content=meta$baidu_site_verification),
+
+    if (!is.null(meta$naver_site_verification))
+      shiny::tags$meta(name="naver-site-verification", content=meta$naver_site_verification),
+
+    if (!is.null(meta$facebook_domain_verification))
+      shiny::tags$meta(name="facebook-domain-verification", content=meta$facebook_domain_verification),
+
+    if (!is.null(meta$pinterest_domain_verification))
+      shiny::tags$meta(name="p:domain_verify", content=meta$pinterest_domain_verification),
+
     if (!is.null(schema))
       shiny::tags$script(
         type = "application/ld+json",
         shiny::HTML(jsonlite::toJSON(schema, auto_unbox = TRUE))
-      ),
-
-    shiny::tags$title(meta$title)
+      )
   )
 }
 
