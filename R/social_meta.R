@@ -6,14 +6,26 @@
 #' @return A \code{shiny::tags$head()} fragment containing canonical, Open
 #'   Graph, Twitter Card, and optional schema.org metadata.
 #' @details If \code{meta} is a character string, it is treated as a YAML file
-#'   path and read with \code{yaml::read_yaml()}. Set \code{schema = FALSE} to
-#'   suppress JSON-LD output. \code{bing_site_verification} falls back to
+#'   path and decoded as UTF-8 regardless of the active locale. Set the
+#'   \code{schema} field in \code{meta} to \code{FALSE} to suppress JSON-LD
+#'   output. \code{bing_site_verification} falls back to
 #'   \code{SHINYSEO_BING_SITE_VERIFICATION} when that environment variable is
 #'   set. \code{twitter_site} and \code{twitter_creator} fall back to
 #'   \code{SHINYSEO_TWITTER_SITE} and
 #'   \code{SHINYSEO_TWITTER_CREATOR} when those environment variables are set.
 #'   The helper does not emit a \code{<title>} tag; set the document title in
 #'   the app UI so it does not clash with an existing Shiny title.
+#'   If \code{favicon} points to an SVG, also set \code{favicon_png} to a PNG
+#'   fallback (e.g. 32x32) -- Chromium-based browsers' address bar does not
+#'   render SVG favicons and shows a generic globe icon without one.
+#'   \code{favicon_png_sizes} overrides the \code{sizes} attribute (defaults
+#'   to \code{"32x32"}).
+#'   Set \code{apple_mobile_web_app_capable = TRUE} to let the app run in
+#'   standalone mode when added to a phone's home screen (emits
+#'   \code{apple-mobile-web-app-capable} and \code{mobile-web-app-capable}).
+#'   \code{apple_mobile_web_app_title} sets the name shown under the home
+#'   screen icon, and \code{apple_mobile_web_app_status_bar_style} controls
+#'   the iOS status bar appearance.
 #'   Optional verification fields include
 #'   \code{bing_site_verification}, \code{google_site_verification},
 #'   \code{yandex_site_verification}, \code{baidu_site_verification},
@@ -36,6 +48,36 @@ social_meta <- function(meta) {
 
   shiny::tags$head(
     shiny::tags$link(rel="canonical", href=meta$url),
+
+    if (!is.null(meta$favicon))
+      shiny::tags$link(rel="icon", type=favicon_mime(meta$favicon, meta$favicon_type),
+                       href=meta$favicon),
+
+    if (!is.null(meta$favicon_png))
+      shiny::tags$link(rel="icon", type="image/png",
+                       sizes=meta$favicon_png_sizes %||% "32x32",
+                       href=meta$favicon_png),
+
+    if (!is.null(meta$apple_touch_icon))
+      shiny::tags$link(rel="apple-touch-icon", href=meta$apple_touch_icon),
+
+    if (!is.null(meta$manifest))
+      shiny::tags$link(rel="manifest", href=meta$manifest),
+
+    if (!is.null(meta$theme_color))
+      shiny::tags$meta(name="theme-color", content=meta$theme_color),
+
+    if (isTRUE(meta$apple_mobile_web_app_capable))
+      shiny::tags$meta(name="apple-mobile-web-app-capable", content="yes"),
+
+    if (isTRUE(meta$apple_mobile_web_app_capable))
+      shiny::tags$meta(name="mobile-web-app-capable", content="yes"),
+
+    if (!is.null(meta$apple_mobile_web_app_title))
+      shiny::tags$meta(name="apple-mobile-web-app-title", content=meta$apple_mobile_web_app_title),
+
+    if (!is.null(meta$apple_mobile_web_app_status_bar_style))
+      shiny::tags$meta(name="apple-mobile-web-app-status-bar-style", content=meta$apple_mobile_web_app_status_bar_style),
 
     shiny::tags$meta(name="description", content=meta$description),
     shiny::tags$meta(name="robots", content=meta$robots),
@@ -100,11 +142,53 @@ social_meta <- function(meta) {
     if (!is.null(meta$pinterest_domain_verification))
       shiny::tags$meta(name="p:domain_verify", content=meta$pinterest_domain_verification),
 
+    if (!is.null(meta$custom))
+      lapply(meta$custom, function(tag) do.call(shiny::tags$meta, tag)),
+
     if (!is.null(schema))
       shiny::tags$script(
         type = "application/ld+json",
         shiny::HTML(jsonlite::toJSON(schema, auto_unbox = TRUE))
-      )
+      ),
+
+    shiny::tags$script(shiny::HTML(
+      "Shiny.addCustomMessageHandler('shinyseo_update_meta', function(fields) {
+        var setMeta = function(sel, val) {
+          var el = document.querySelector(sel);
+          if (el) el.setAttribute('content', val);
+        };
+        if (fields.title) {
+          document.title = fields.title;
+          setMeta('meta[property=\"og:title\"]', fields.title);
+          setMeta('meta[name=\"twitter:title\"]', fields.title);
+        }
+        if (fields.description) {
+          setMeta('meta[name=\"description\"]', fields.description);
+          setMeta('meta[property=\"og:description\"]', fields.description);
+          setMeta('meta[name=\"twitter:description\"]', fields.description);
+        }
+        if (fields.url) {
+          var canon = document.querySelector('link[rel=\"canonical\"]');
+          if (canon) canon.setAttribute('href', fields.url);
+          setMeta('meta[property=\"og:url\"]', fields.url);
+          setMeta('meta[name=\"twitter:url\"]', fields.url);
+        }
+        if (fields.image) {
+          setMeta('meta[property=\"og:image\"]', fields.image);
+          setMeta('meta[name=\"twitter:image\"]', fields.image);
+          // Width, height, type, and alt described the old image; drop them
+          // rather than leave stale values on the new one.
+          ['meta[property=\"og:image:width\"]',
+           'meta[property=\"og:image:height\"]',
+           'meta[property=\"og:image:type\"]',
+           'meta[property=\"og:image:alt\"]',
+           'meta[name=\"twitter:image:alt\"]'].forEach(function(sel) {
+            var el = document.querySelector(sel);
+            if (el) el.parentNode.removeChild(el);
+          });
+        }
+      });"
+    ))
   )
 }
 

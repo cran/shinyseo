@@ -20,14 +20,26 @@ Inject social metadata into Shiny UI
 }
 \details{
 If \code{meta} is a character string, it is treated as a YAML file
-  path and read with \code{yaml::read_yaml()}. Set \code{schema = FALSE} to
-  suppress JSON-LD output. \code{bing_site_verification} falls back to
+  path and decoded as UTF-8 regardless of the active locale. Set the
+  \code{schema} field in \code{meta} to \code{FALSE} to suppress JSON-LD
+  output. \code{bing_site_verification} falls back to
   \code{SHINYSEO_BING_SITE_VERIFICATION} when that environment variable is
-  set. \code{twitter_site} and
-  \code{twitter_creator} fall back to \code{SHINYSEO_TWITTER_SITE} and
+  set. \code{twitter_site} and \code{twitter_creator} fall back to
+  \code{SHINYSEO_TWITTER_SITE} and
   \code{SHINYSEO_TWITTER_CREATOR} when those environment variables are set.
   The helper does not emit a \code{<title>} tag; set the document title in
-  the app UI so it does not clash with any title Shiny already sets.
+  the app UI so it does not clash with an existing Shiny title.
+  If \code{favicon} points to an SVG, also set \code{favicon_png} to a PNG
+  fallback (e.g. 32x32) -- Chromium-based browsers' address bar does not
+  render SVG favicons and shows a generic globe icon without one.
+  \code{favicon_png_sizes} overrides the \code{sizes} attribute (defaults
+  to \code{"32x32"}).
+  Set \code{apple_mobile_web_app_capable = TRUE} to let the app run in
+  standalone mode when added to a phone's home screen (emits
+  \code{apple-mobile-web-app-capable} and \code{mobile-web-app-capable}).
+  \code{apple_mobile_web_app_title} sets the name shown under the home
+  screen icon, and \code{apple_mobile_web_app_status_bar_style} controls
+  the iOS status bar appearance.
   Optional verification fields include
   \code{bing_site_verification}, \code{google_site_verification},
   \code{yandex_site_verification}, \code{baidu_site_verification},

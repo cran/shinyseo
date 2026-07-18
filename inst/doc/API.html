@@ -348,9 +348,15 @@ reading the source.</p>
 <div id="exported-surface" class="section level2">
 <h2>Exported surface</h2>
 <ul>
-<li><code>social_meta(meta)</code></li>
+<li><code>social_meta(meta)</code> — builds and injects metadata tags
+into the page <code>&lt;head&gt;</code> at startup.</li>
+<li><code>update_meta(session, title, description, url, image)</code> —
+reactively updates one or more metadata fields from the server at
+runtime.</li>
+<li><code>write_manifest(meta, path, display, start_url, background_color)</code>
+— writes a <code>manifest.json</code> to <code>www/</code> so Shiny can
+serve it.</li>
 </ul>
-<p>There are no other exported helpers.</p>
 </div>
 <div id="return-value" class="section level2">
 <h2>Return value</h2>
@@ -667,6 +673,146 @@ schema description</td>
 </tr>
 </tbody>
 </table>
+</div>
+<div id="favicon-and-web-app-manifest-fields" class="section level2">
+<h2>Favicon and web app manifest fields</h2>
+<p>These optional fields in <code>social_meta()</code> control browser
+icon and PWA behaviour:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Field</th>
+<th>Tag produced</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>favicon</code></td>
+<td><code>&lt;link rel=&quot;icon&quot; type=&quot;...&quot; href=&quot;...&quot;&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>favicon_type</code></td>
+<td>Overrides the MIME type inferred from <code>favicon</code>’s
+extension</td>
+</tr>
+<tr class="odd">
+<td><code>favicon_png</code></td>
+<td><code>&lt;link rel=&quot;icon&quot; type=&quot;image/png&quot; sizes=&quot;...&quot; href=&quot;...&quot;&gt;</code>
+— PNG fallback alongside an SVG <code>favicon</code></td>
+</tr>
+<tr class="even">
+<td><code>favicon_png_sizes</code></td>
+<td>Overrides the <code>sizes</code> attribute on
+<code>favicon_png</code> (defaults to <code>&quot;32x32&quot;</code>)</td>
+</tr>
+<tr class="odd">
+<td><code>apple_touch_icon</code></td>
+<td><code>&lt;link rel=&quot;apple-touch-icon&quot; href=&quot;...&quot;&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>manifest</code></td>
+<td><code>&lt;link rel=&quot;manifest&quot; href=&quot;...&quot;&gt;</code></td>
+</tr>
+<tr class="odd">
+<td><code>theme_color</code></td>
+<td><code>&lt;meta name=&quot;theme-color&quot; content=&quot;...&quot;&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>short_name</code></td>
+<td>Used by <code>write_manifest()</code> for the manifest
+<code>short_name</code> field</td>
+</tr>
+</tbody>
+</table>
+<p>MIME type is inferred automatically from the file extension of
+<code>favicon</code> (<code>.ico</code>, <code>.png</code>,
+<code>.svg</code>, <code>.webp</code>, <code>.gif</code>). Supply
+<code>favicon_type</code> to override.</p>
+<p>If <code>favicon</code> is an SVG, also set <code>favicon_png</code>
+to a PNG fallback. Chromium-based browsers don’t render SVG favicons in
+the address bar and fall back to a generic globe icon without one.</p>
+<div id="write_manifest" class="section level3">
+<h3><code>write_manifest()</code></h3>
+<p>Generates <code>www/manifest.json</code> from the same metadata
+object. Call it once in <code>global.R</code>:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>shinyseo<span class="sc">::</span><span class="fu">write_manifest</span>(<span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">title            =</span> <span class="st">&quot;My App&quot;</span>,</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">short_name       =</span> <span class="st">&quot;MyApp&quot;</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">description      =</span> <span class="st">&quot;A Shiny web app.&quot;</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  <span class="at">theme_color      =</span> <span class="st">&quot;#1a73e8&quot;</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>  <span class="at">favicon          =</span> <span class="st">&quot;/favicon.png&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>  <span class="at">apple_touch_icon =</span> <span class="st">&quot;/apple-touch-icon.png&quot;</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>))</span></code></pre></div>
+<p>Then reference the manifest from the UI:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>shinyseo<span class="sc">::</span><span class="fu">social_meta</span>(<span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  ...,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">manifest =</span> <span class="st">&quot;/manifest.json&quot;</span></span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>))</span></code></pre></div>
+<p>Parameters:</p>
+<ul>
+<li><code>meta</code> — same YAML path or list as
+<code>social_meta()</code>.</li>
+<li><code>path</code> — directory to write into. Defaults to
+<code>&quot;www&quot;</code>.</li>
+<li><code>display</code> — PWA display mode: <code>&quot;standalone&quot;</code>
+(default), <code>&quot;fullscreen&quot;</code>, <code>&quot;minimal-ui&quot;</code>, or
+<code>&quot;browser&quot;</code>.</li>
+<li><code>start_url</code> — start URL in the manifest. Defaults to
+<code>&quot;/&quot;</code>.</li>
+<li><code>background_color</code> — splash screen background. Defaults
+to <code>theme_color</code> when set, otherwise
+<code>&quot;#ffffff&quot;</code>.</li>
+</ul>
+</div>
+</div>
+<div id="update_meta-reactive-metadata-updates" class="section level2">
+<h2><code>update_meta()</code> — reactive metadata updates</h2>
+<p><code>update_meta(session, title, description, url, image)</code>
+sends a custom message to the browser that updates the live DOM without
+a page reload. It is intended for multi-page or tabbed Shiny apps where
+the metadata should reflect the current view.</p>
+<div id="parameters" class="section level3">
+<h3>Parameters</h3>
+<ul>
+<li><code>session</code> — the Shiny <code>session</code> object passed
+to <code>server</code>.</li>
+<li><code>title</code> — replaces <code>document.title</code>,
+<code>og:title</code>, and <code>twitter:title</code>.</li>
+<li><code>description</code> — replaces
+<code>meta[name=&quot;description&quot;]</code>, <code>og:description</code>, and
+<code>twitter:description</code>.</li>
+<li><code>url</code> — replaces <code>link[rel=&quot;canonical&quot;]</code>,
+<code>og:url</code>, and <code>twitter:url</code>.</li>
+<li><code>image</code> — replaces <code>og:image</code> and
+<code>twitter:image</code>.</li>
+</ul>
+<p>All parameters except <code>session</code> are optional. Only the
+fields you supply are changed; omitted fields keep their current values.
+If no fields are supplied the function is a no-op.</p>
+</div>
+<div id="requirements" class="section level3">
+<h3>Requirements</h3>
+<p><code>social_meta()</code> must be present in the UI for the
+JavaScript handler to be registered. <code>update_meta()</code> alone
+has no effect.</p>
+</div>
+<div id="example" class="section level3">
+<h3>Example</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>server <span class="ot">&lt;-</span> <span class="cf">function</span>(input, output, session) {</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">observeEvent</span>(input<span class="sc">$</span>tabs, {</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="cf">if</span> (input<span class="sc">$</span>tabs <span class="sc">==</span> <span class="st">&quot;about&quot;</span>) {</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>      shinyseo<span class="sc">::</span><span class="fu">update_meta</span>(session,</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>        <span class="at">title       =</span> <span class="st">&quot;About – My App&quot;</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>        <span class="at">description =</span> <span class="st">&quot;Learn more about the team behind the app.&quot;</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>      )</span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>    }</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  })</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>}</span></code></pre></div>
+</div>
 </div>
 <div id="behavior-notes" class="section level2">
 <h2>Behavior notes</h2>
